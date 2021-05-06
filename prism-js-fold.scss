@@ -1,0 +1,40 @@
+code {
+  details {
+    &[open] {
+      & > summary > span:first-child::before {
+        transform: rotate(90deg);
+      }
+    }
+    &:not([open]) {
+      display: inline;
+
+      & > summary::after {
+        content: ' ... '
+      }
+
+      & + span.ll {
+        display: none;
+      }
+    }
+  }
+
+  summary {
+    display: inline;
+    position: relative;
+    list-style: none;
+
+    & > span:first-child::before {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      height: 21px;
+      margin-left: -16px;
+      margin-top: 1px;
+      content: "▶";
+      font-size: 12px;
+      font-style: normal;
+      transition: transform 100ms;
+      color: #999;
+    }
+  }
+}

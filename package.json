@@ -1,0 +1,19 @@
+{
+  "name": "prism-js-fold",
+  "version": "1.0.0",
+  "description": "PrismJS plugin adding code folding to JSON & JavaScript objects & arrays via <details> tag insertion.",
+  "main": "prism-js-fold.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "prism",
+    "fold",
+    "folding",
+    "json",
+    "js",
+    "plugin"
+  ],
+  "author": "Nils Lundquist",
+  "license": "CC-BY-SA-4.0"
+}

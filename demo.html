@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js" integrity="sha256-2N+3bVl+vOCJyZ9ZbH9Eb99XKT/53oT5V8eRbB8bFcA=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-33Qw0lN3qo7tLZL4c7vDLCapRUs+gNtQRaVIOHk4Ors=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/keep-markup/prism-keep-markup.min.js" integrity="sha256-tWmxECPXT6XzpXeQnXnaguVfTphRFtcmAelJ9CO2JmM=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/themes/prism.css" integrity="sha256-h/qtq9bUnXbOOwP4EcbLtYM9Mk3iQQcHZAZ+Jz5y0WQ=" crossorigin="anonymous">
+  <link href="prism-js-fold.css" rel="stylesheet">
+  <script src="prism-js-fold.js"></script>
+</head>
+<body>
+
+<pre class="language-json"><code class="language-json">[
+  {
+    "id": "0001",
+    "type": "donut",
+    "name": "Cake",
+    "ppu": 0.55,
+    "batters": {
+      "batter": [
+        {
+          "id": "1001",
+          "type": "Regular"
+        },
+        {
+          "id": "1002",
+          "type": "Chocolate"
+        },
+        {
+          "id": "1003",
+          "type": "Blueberry"
+        },
+        {
+          "id": "1004",
+          "type": "Devil's Food"
+        }
+      ]
+    },
+    "topping": [
+      {
+        "id": "5001",
+        "type": "None"
+      },
+      {
+        "id": "5002",
+        "type": "Glazed"
+      },
+      {
+        "id": "5005",
+        "type": "Sugar"
+      },
+      {
+        "id": "5007",
+        "type": "Powdered Sugar"
+      },
+      {
+        "id": "5006",
+        "type": "Chocolate with Sprinkles"
+      },
+      {
+        "id": "5003",
+        "type": "Chocolate"
+      },
+      {
+        "id": "5004",
+        "type": "Maple"
+      }
+    ]
+  },
+  {
+    "id": "0002",
+    "type": "donut",
+    "name": "Raised",
+    "ppu": 0.55,
+    "batters": {
+      "batter": [
+        {
+          "id": "1001",
+          "type": "Regular"
+        }
+      ]
+    },
+    "topping": [
+      {
+        "id": "5001",
+        "type": "None"
+      },
+      {
+        "id": "5002",
+        "type": "Glazed"
+      },
+      {
+        "id": "5005",
+        "type": "Sugar"
+      },
+      {
+        "id": "5003",
+        "type": "Chocolate"
+      },
+      {
+        "id": "5004",
+        "type": "Maple"
+      }
+    ]
+  },
+  {
+    "id": "0003",
+    "type": "donut",
+    "name": "Old Fashioned",
+    "ppu": 0.55,
+    "batters": {
+      "batter": [
+        {
+          "id": "1001",
+          "type": "Regular"
+        },
+        {
+          "id": "1002",
+          "type": "Chocolate"
+        }
+      ]
+    },
+    "topping": [
+      {
+        "id": "5001",
+        "type": "None"
+      },
+      {
+        "id": "5002",
+        "type": "Glazed"
+      },
+      {
+        "id": "5003",
+        "type": "Chocolate"
+      },
+      {
+        "id": "5004",
+        "type": "Maple"
+      }
+    ]
+  }
+]</code></pre>
+
+<pre class="language-js"><code class="language-js">  function createDependencyResolver(entryMap) {
+		/** @type {Object<string, StringSet>} */
+		var map = {};
+		var _stackArray = [];
+
+		/**
+		 * Adds the dependencies of the given component to the dependency map.
+		 *
+		 * @param {string} id
+		 * @param {string[]} stack
+		 */
+		function addToMap(id, stack) {
+			if (id in map) {
+				return;
+			}
+
+			stack.push(id);
+
+			// check for circular dependencies
+			var firstIndex = stack.indexOf(id);
+			if (firstIndex < stack.length - 1) {
+				throw new Error('Circular dependency: ' + stack.slice(firstIndex).join(' -> '));
+			}
+
+			/** @type {StringSet} */
+			var dependencies = {};
+
+			var entry = entryMap[id];
+			if (entry) {
+				/**
+				 * This will add the direct dependency and all of its transitive dependencies to the set of
+				 * dependencies of `entry`.
+				 *
+				 * @param {string} depId
+				 * @returns {void}
+				 */
+				function handleDirectDependency(depId) {
+					if (!(depId in entryMap)) {
+						throw new Error(id + ' depends on an unknown component ' + depId);
+					}
+					if (depId in dependencies) {
+						// if the given dependency is already in the set of deps, then so are its transitive deps
+						return;
+					}
+
+					addToMap(depId, stack);
+					dependencies[depId] = true;
+					for (var transitiveDepId in map[depId]) {
+						dependencies[transitiveDepId] = true;
+					}
+				}
+
+				forEach(entry.require, handleDirectDependency);
+				forEach(entry.optional, handleDirectDependency);
+				forEach(entry.modify, handleDirectDependency);
+			}
+
+			map[id] = dependencies;
+
+			stack.pop();
+		}
+
+		return function (id) {
+			var deps = map[id];
+			if (!deps) {
+				addToMap(id, _stackArray);
+				deps = map[id];
+			}
+			return deps;
+		};
+	}</code></pre>
+
+</body>
+</html>
