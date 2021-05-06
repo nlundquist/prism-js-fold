@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "PrismJS plugin adding code folding to JSON & JavaScript objects & arrays via <details> tag insertion.",
   "main": "prism-js-fold.js",
+  "repository": "https://github.com/nlundquist/prism-js-fold.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
