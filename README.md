@@ -33,7 +33,7 @@ Require or import it after Prism.
 
 ```js
 import 'prismjs'
-import 'prism-json-fold'
+import 'prism-js-fold'
 
 // commonjs
 require('prismjs')
