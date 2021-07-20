@@ -96,3 +96,9 @@ if (Prism) {
 } else {
   console.warn('prism-js-fold: Prism was not loaded so we could not add the Prism hook needed for code folding insertion.')
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    insertFolds: insertFolds
+  }
+}
