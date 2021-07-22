@@ -42,17 +42,20 @@ function insertFold(inputBuffer, depth, context) {
         ...currentLineStart,
         ...currentLineEnd,
         ...firstLineContentWrapperClose,
-        ...summaryCloseFragment,
-        ...result,
+        ...summaryCloseFragment
+      );
+      result.forEach(function(v) {output.push(v)});
+      output.push(
         ...detailsCloseFragment,
         ...lastLineWrapperOpen,
         ...resultLastLine,
         ...lastLineWrapperClose,
         symbolPairMap[symbol]
-      )
+      );
       remaining = resultRemaining
     } else {
-      output.push(...result, symbolPairMap[symbol])
+      result.forEach(function(v) {output.push(v)});
+      output.push(symbolPairMap[symbol])
       remaining = resultRemaining
     }
   }
